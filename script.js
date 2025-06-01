@@ -19,6 +19,7 @@ function setCurrentUser(user) {
 function clearCurrentUser() {
   localStorage.removeItem('currentUser');
 }
+
 function signUp(username, password, role='user') {
   const users = getUsers();
   if (users.find(u => u.username === username)) {
@@ -29,6 +30,7 @@ function signUp(username, password, role='user') {
   saveUsers(users);
   return true;
 }
+
 function signIn(username, password) {
   const users = getUsers();
   const user = users.find(u => u.username === username && u.password === password);
@@ -40,11 +42,12 @@ function signIn(username, password) {
     return false;
   }
 }
+
 function logout() {
   clearCurrentUser();
 }
 
-// Wait for DOM
+// DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   const currentPage = window.location.pathname.split('/').pop();
   const user = getCurrentUser();
@@ -55,30 +58,40 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
   if ((currentPage === 'index.html' || currentPage === 'signup.html') && user) {
-    window.location.href = 'dashboard.html';
+    // Sign in redirects
+    if (user.role === 'admin') {
+      window.location.href = 'admin.html';
+    } else {
+      window.location.href = 'dashboard.html';
+    }
     return;
   }
 
-  // Sign in
+  // Sign In
   if (currentPage === 'index.html') {
     document.getElementById('signin-form').addEventListener('submit', e => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       if (signIn(username, password)) {
-        window.location.href = 'dashboard.html';
+        const user = getCurrentUser();
+        if (user.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'dashboard.html';
+        }
       }
     });
   }
 
-  // Sign up with password length and optional admin code
+  // Sign Up with password length & optional admin code
   if (currentPage === 'signup.html') {
     document.getElementById('signup-form').addEventListener('submit', e => {
       e.preventDefault();
       const username = document.getElementById('new-username').value.trim();
       const password = document.getElementById('new-password').value;
       if (password.length < 8) {
-        alert('Password must be at least 8 characters long.');
+        alert('Password must be at least 8 characters.');
         return;
       }
       const adminCodeInput = document.getElementById('admin-code') ? document.getElementById('admin-code').value.trim() : '';
@@ -100,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Dashboard
+  // Dashboard (users)
   if (currentPage === 'dashboard.html') {
     const fileListDiv = document.getElementById('file-list');
 
@@ -138,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         };
         div.appendChild(delBtn);
-
         fileListDiv.appendChild(div);
       });
     }
@@ -160,8 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Restrict embed code for non-admins
     const iframeTextarea = document.getElementById('iframe-code');
     if (iframeTextarea && user.role !== 'admin') {
-      iframeTextarea.disabled = true; // prevent editing
-      iframeTextarea.parentElement.style.display = 'none'; // hide
+      iframeTextarea.disabled = true;
+      iframeTextarea.parentElement.style.display = 'none';
     }
 
     loadUserFiles();
@@ -207,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           };
           div.appendChild(delBtn);
-
           adminFileList.appendChild(div);
         });
       });
