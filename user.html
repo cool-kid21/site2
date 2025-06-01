@@ -1,0 +1,43 @@
+<!-- user.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Study Server - User Management</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header>Study Server - User Management</header>
+<nav>
+  <a href="admin.html">Manage Files</a>
+  <a href="users.html" style="font-weight:bold;">Manage Users</a>
+  <a href="dashboard.html">User Dashboard</a>
+  <a href="#" id="logout">Logout</a>
+</nav>
+<div class="container" id="user-management-container">
+<h1>User Management</h1>
+<h2>Add User</h2>
+<form id="add-user-form">
+  <label for="new-username">Username</label>
+  <input type="text" id="new-username" required />
+
+  <label for="new-password">Password</label>
+  <input type="password" id="new-password" required />
+
+  <label>
+    Role:
+    <select id="user-role">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select>
+  </label>
+  <button type="submit">Add User</button>
+</form>
+
+<h2>Existing Users</h2>
+<div id="user-list"></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
