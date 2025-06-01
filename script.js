@@ -54,7 +54,7 @@ function addFile(uploadedBy, filename, iframeCode) {
 }
 function loadAndDisplayFilesForUser() {
   const container = document.getElementById('file-list');
-  if (!container) return; // in pages without this element
+  if (!container) return; // element may not exist on all pages
   container.innerHTML = '';
 
   const allFiles = loadAllFiles();
@@ -78,7 +78,7 @@ function loadAndDisplayFilesForUser() {
     const iframeDiv = document.createElement('div');
     iframeDiv.innerHTML = iframe;
 
-    // Make iframe clickable
+    // Make iframe clickable for fullscreen
     const clickableDiv = document.createElement('div');
     clickableDiv.style.cursor = 'pointer';
     clickableDiv.appendChild(iframeDiv);
@@ -86,10 +86,9 @@ function loadAndDisplayFilesForUser() {
       document.getElementById('fullscreen-modal').style.display = 'flex';
       document.getElementById('modal-iframe-container').innerHTML = iframe;
     });
-
     div.appendChild(clickableDiv);
 
-    // Show delete button if owner or admin
+    // Add delete button if owner or admin
     if (getCurrentUser().role === 'admin' || getCurrentUser().username === uploadedBy) {
       const delBtn = document.createElement('button');
       delBtn.textContent = 'Delete';
@@ -111,7 +110,7 @@ function loadAndDisplayFilesForUser() {
   });
 }
 
-// Event handlers for login, signup, logout
+// Event listener for logout
 document.querySelectorAll('#logout').forEach(link => {
   link.addEventListener('click', () => {
     logout();
@@ -119,7 +118,7 @@ document.querySelectorAll('#logout').forEach(link => {
   });
 });
 
-// Modal close
+// Modal close handler
 const modalOverlay = document.getElementById('fullscreen-modal');
 const closeModalBtn = document.getElementById('close-modal');
 if (closeModalBtn) {
@@ -129,13 +128,15 @@ if (closeModalBtn) {
   });
 }
 
-// On DOM load
+// Initialize event handlers based on page
 window.addEventListener('DOMContentLoaded', () => {
-  const currentPage = window.location.pathname.split('/').pop();
+  const page = window.location.pathname.split('/').pop();
+
   const user = getCurrentUser();
 
+  // Redirect based on role
   if (user) {
-    if (currentPage === 'index.html' || currentPage === 'signup.html') {
+    if (page === 'index.html' || page === 'signup.html') {
       if (user.role === 'admin') {
         window.location.href = 'admin.html';
         return;
@@ -144,62 +145,90 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
     }
-    if (currentPage === 'dashboard.html' && user.role === 'admin') {
+    if (page === 'dashboard.html' && user.role === 'admin') {
       window.location.href = 'admin.html';
       return;
     }
-    if (currentPage === 'admin.html' && user.role !== 'admin') {
+    if (page === 'admin.html' && user.role !== 'admin') {
       window.location.href = 'dashboard.html';
       return;
     }
   } else {
-    if (currentPage !== 'index.html' && currentPage !== 'signup.html') {
+    if (page !== 'index.html' && page !== 'signup.html') {
       window.location.href = 'index.html';
       return;
     }
   }
 
-  if (currentPage === 'index.html') {
-    document.getElementById('signin-form').addEventListener('submit', e => {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      if (signIn(username, password)) {
-        const user = getCurrentUser();
-        if (user.role === 'admin') {
-          window.location.href = 'admin.html';
-        } else {
-          window.location.href = 'dashboard.html';
+  // Attach event for sign-in page
+  if (page === 'index.html') {
+    const form = document.getElementById('signin-form');
+    if (form) {
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        if (signIn(username, password)) {
+          const user = getCurrentUser();
+          if (user.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'dashboard.html';
+          }
         }
-      }
-    });
+      });
+    }
   }
 
-  if (currentPage === 'signup.html') {
-    document.getElementById('signup-form').addEventListener('submit', e => {
-      e.preventDefault();
-      const username = document.getElementById('new-username').value.trim();
-      const password = document.getElementById('new-password').value;
-      if (password.length < 8) {
-        alert('Password must be at least 8 characters.');
-        return;
-      }
-      const adminCode = document.getElementById('admin-code') ? document.getElementById('admin-code').value.trim() : '';
-      let role = 'user';
-      if (adminCode && adminCode === 'admin123') {
-        role = 'admin';
-      }
-      if (signUp(username, password, role)) {
-        alert('Account created! Please sign in.');
-        window.location.href = 'index.html';
-      }
-    });
+  // Attach event for sign-up page
+  if (page === 'signup.html') {
+    const form = document.getElementById('signup-form');
+    if (form) {
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const username = document.getElementById('new-username').value.trim();
+        const password = document.getElementById('new-password').value;
+        if (password.length < 8) {
+          alert('Password must be at least 8 characters.');
+          return;
+        }
+        const adminCodeInput = document.getElementById('admin-code');
+        const adminCode = adminCodeInput ? adminCodeInput.value.trim() : '';
+        let role = 'user';
+        if (adminCode && adminCode === 'admin123') {
+          role = 'admin';
+        }
+        if (signUp(username, password, role)) {
+          alert('Account created! Please sign in.');
+          window.location.href = 'index.html';
+        }
+      });
+    }
   }
 
-  if (currentPage === 'dashboard.html') {
+  // Load files in dashboard
+  if (page === 'dashboard.html') {
     loadAndDisplayFilesForUser();
+
+    // Attach upload form event
+    const uploadForm = document.getElementById('upload-form');
+    if (uploadForm) {
+      uploadForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const filename = document.getElementById('file-name').value.trim();
+        const iframeCode = document.getElementById('iframe-code').value.trim();
+        const user = getCurrentUser();
+        if (filename && iframeCode) {
+          addFile(user.username, filename, iframeCode);
+          loadAndDisplayFilesForUser(); // refresh list
+          uploadForm.reset();
+        }
+      });
+    }
   }
-  if (currentPage === 'admin.html') {
-    loadAllFiles();
+
+  // Load files in admin page
+  if (page === 'admin.html') {
+    loadAllFiles(); // To ensure data is loaded
   }
 });
