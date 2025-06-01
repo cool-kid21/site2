@@ -1,73 +1,24 @@
 // script.js
 
-// Utility functions
-function getUsers() {
-  const users = JSON.parse(localStorage.getItem('users')) || [];
-  return users;
-}
+// Utility functions (same as before)...
 
-function saveUsers(users) {
-  localStorage.setItem('users', JSON.stringify(users));
-}
+// Authentication functions (same as before)...
 
-function getCurrentUser() {
-  return JSON.parse(localStorage.getItem('currentUser'));
-}
-
-function setCurrentUser(user) {
-  localStorage.setItem('currentUser', JSON.stringify(user));
-}
-
-function clearCurrentUser() {
-  localStorage.removeItem('currentUser');
-}
-
-// Authentication
-function signUp(username, password, role = 'user') {
-  const users = getUsers();
-  if (users.find(u => u.username === username)) {
-    alert('Username already exists.');
-    return false;
-  }
-  users.push({ username, password, role });
-  saveUsers(users);
-  return true;
-}
-
-function signIn(username, password) {
-  const users = getUsers();
-  const user = users.find(u => u.username === username && u.password === password);
-  if (user) {
-    setCurrentUser(user);
-    return true;
-  } else {
-    alert('Invalid credentials.');
-    return false;
-  }
-}
-
-function logout() {
-  clearCurrentUser();
-}
-
-// Page-specific logic
 document.addEventListener('DOMContentLoaded', () => {
   const currentPage = window.location.pathname.split('/').pop();
   const user = getCurrentUser();
 
-  // Redirect if not signed in (except on signup.html)
   if (currentPage !== 'signup.html' && currentPage !== 'index.html' && !user) {
     window.location.href = 'index.html';
     return;
   }
 
-  // Redirect if signed in on sign-in/signup pages
   if ((currentPage === 'index.html' || currentPage === 'signup.html') && user) {
     window.location.href = 'dashboard.html';
     return;
   }
 
-  // Handle Sign In
+  // Sign in handling
   if (currentPage === 'index.html') {
     document.getElementById('signin-form').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -79,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Sign Up
+  // Sign up handling
   if (currentPage === 'signup.html') {
     document.getElementById('signup-form').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -92,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Logout
+  // Logout
   if (document.getElementById('logout')) {
     document.getElementById('logout').addEventListener('click', () => {
       logout();
@@ -100,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Dashboard logic
+  // Dashboard
   if (currentPage === 'dashboard.html') {
     // Load user files
     const fileListDiv = document.getElementById('file-list');
@@ -126,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         iframeContainer.innerHTML = iframeCode;
         div.appendChild(iframeContainer);
 
-        // Optionally, add delete button
+        // Delete button
         const delBtn = document.createElement('button');
         delBtn.textContent = 'Delete';
         delBtn.style.marginTop = '0.5rem';
@@ -161,15 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserFiles();
   }
 
-  // Admin panel logic
+  // Admin panel
   if (currentPage === 'admin.html') {
-    // Check if user is admin
     if (user.role !== 'admin') {
       alert('Access denied.');
       window.location.href = 'dashboard.html';
       return;
     }
-    // Load all files
+
     const adminFileList = document.getElementById('admin-file-list');
     const users = getUsers();
 
@@ -208,13 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Add new file
+    // Add new file (admin only)
     document.getElementById('admin-upload-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const iframeCode = document.getElementById('admin-iframe-code').value.trim();
       if (!iframeCode) return;
       const files = JSON.parse(localStorage.getItem('files')) || {};
-      // For admin, assign to 'admin' or prompt for user? Here, assign to 'admin' user.
       if (!files['admin']) files['admin'] = [];
       files['admin'].push(iframeCode);
       localStorage.setItem('files', JSON.stringify(files));
@@ -227,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadUsers() {
       userListDiv.innerHTML = '';
-      getUsers().forEach((u, i) => {
+      getUsers().forEach((u) => {
         const div = document.createElement('div');
         div.className = 'user-list';
 
@@ -235,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>Username: ${u.username} | Role: ${u.role}</p>
         `;
 
-        // Remove user button (except prevent deleting self)
         if (u.username !== user.username) {
           const btn = document.createElement('button');
           btn.textContent = 'Remove User';
@@ -268,5 +216,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadAllFiles();
     loadUsers();
+  }
+
+  // Hide iframe input for regular users on dashboard
+  if (currentPage === 'dashboard.html') {
+    // Remove iframe textarea if user is not admin
+    const iframeTextarea = document.getElementById('iframe-code');
+    if (user.role !== 'admin' && iframeTextarea) {
+      iframeTextarea.parentNode.style.display = 'none';
+    }
   }
 });
