@@ -3,14 +3,12 @@
 /* Import font */
 @import url('https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap');
 
-/* Reset some default styles */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Body styles */
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background-color: #fff;
@@ -18,7 +16,6 @@ body {
   line-height: 1.6;
 }
 
-/* Header styling */
 header {
   background-color: #000;
   color: #fff;
@@ -30,7 +27,6 @@ header {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Navigation styles */
 nav {
   display: flex;
   justify-content: center;
@@ -54,7 +50,6 @@ nav a:hover {
   color: #000;
 }
 
-/* Container for main content */
 .container {
   max-width: 1000px;
   margin: 2rem auto;
@@ -64,7 +59,6 @@ nav a:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Headings */
 h1 {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -73,7 +67,6 @@ h1 {
   color: #111;
 }
 
-/* Section boxes for forms and content */
 .section-box {
   background-color: #fafafa;
   border: 1px solid #eee;
@@ -92,7 +85,6 @@ h1 {
   color: #222;
 }
 
-/* Form labels and inputs */
 label {
   display: block;
   margin-top: 1rem;
@@ -113,7 +105,6 @@ select {
   margin-bottom: 1.2rem;
 }
 
-/* Buttons */
 button {
   background-color: #222;
   color: #fff;
@@ -130,7 +121,6 @@ button:hover {
   transform: translateY(-1px);
 }
 
-/* File list styles */
 .file-list {
   display: flex;
   flex-direction: column;
@@ -156,7 +146,6 @@ button:hover {
   color: #333;
 }
 
-/* Fullscreen modal overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -195,7 +184,6 @@ button:hover {
   color: #000;
 }
 
-/* Responsive iframe height on small screens */
 @media(max-width: 600px) {
   iframe {
     height: 300px;
