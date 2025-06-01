@@ -2,19 +2,19 @@
 
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background-color: #f0f2f5;
+  background-color: #fff;
   margin: 0;
   padding: 0;
-  color: #333;
+  color: #000;
 }
 
 header {
-  background-color: #4CAF50;
+  background-color: #000;
   padding: 1rem;
-  color: white;
+  color: #fff;
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.8rem;
+  font-weight: normal;
 }
 
 nav {
@@ -27,7 +27,8 @@ nav {
 nav a {
   padding: 1rem;
   text-decoration: none;
-  color: #333;
+  color: #000;
+  font-weight: bold;
   transition: background-color 0.2s;
 }
 
@@ -38,41 +39,51 @@ nav a:hover {
 .container {
   max-width: 900px;
   margin: 2rem auto;
-  padding: 1rem;
+  padding: 1.5rem;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.03);
 }
 
 h1 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #333;
+  font-weight: normal;
+  font-size: 2rem;
+  color: #000;
 }
 
 button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 0.75rem 1.5rem;
+  background-color: #000;
+  color: #fff;
+  padding: 0.75rem 1.2rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
   margin-top: 1rem;
+  transition: background-color 0.2s;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #222;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"], textarea {
   width: 100%;
-  padding: 0.75rem;
+  max-width: 100%;
+  padding: 0.5rem 0.75rem;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Restrict size of textareas for upload forms */
+#iframe-code, #admin-iframe-code {
+  height: 80px;
 }
 
 iframe {
@@ -80,8 +91,10 @@ iframe {
   height: 480px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-top: 0.5rem;
 }
 
+/* File list styling */
 .file-list {
   display: flex;
   flex-direction: column;
@@ -90,19 +103,15 @@ iframe {
 }
 
 .file-item {
-  background-color: #fafafa;
+  background-color: #f9f9f9;
   padding: 0.75rem;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
 }
 
-.file-item span {
-  margin-bottom: 0.5rem;
-  word-break: break-all;
-}
-
+/* Responsive adjustments */
 @media(max-width: 600px) {
   iframe {
     height: 300px;
