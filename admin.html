@@ -7,50 +7,53 @@
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header>Study Server - Admin Panel</header>
+<header>Study Server - Manage Files</header>
 <nav>
-  
+  <a href="admin.html" style="font-weight:bold;">Manage Files</a>
   <a href="users.html">Manage Users</a>
   <a href="dashboard.html">User Dashboard</a>
   <a href="#" id="logout">Logout</a>
 </nav>
+
+<!-- Modal for fullscreen view -->
+<div id="fullscreen-modal" class="modal-overlay">
+  <div class="modal-content">
+    <button id="close-modal" class="close-btn">×</button>
+    <div id="modal-iframe-container"></div>
+  </div>
+</div>
+
 <div class="container" id="admin-container">
-<h1>Manage Files</h1>
+  <h1>Manage Files</h1>
+  <!-- Upload form -->
+  <form id="admin-upload-form">
+    <div class="section-box">
+      <h2>Add New File</h2>
+      <label for="admin-file-name">File Name</label>
+      <input type="text" id="admin-file-name" placeholder="Enter file name" required />
 
-<!-- Upload iframe code -->
-<form id="admin-upload-form">
-  <label for="admin-iframe-code">Embed Google Drive iframe code</label>
-  <textarea id="admin-iframe-code" rows="4" placeholder='Paste iframe code here...' required></textarea>
-  <button type="submit">Add File</button>
-</form>
+      <label for="admin-iframe-code">Embed Google Drive iframe code</label>
+      <textarea id="admin-iframe-code" rows="4" placeholder='Paste iframe code here...' required></textarea>
 
-<h2>Existing Files</h2>
-<div class="file-list" id="admin-file-list"></div>
-
-<h1>Manage Users</h1>
-<div id="user-management">
-  <h2>Add User</h2>
-  <form id="add-user-form">
-    <label for="new-username">Username</label>
-    <input type="text" id="new-username" required />
-
-    <label for="new-password">Password</label>
-    <input type="password" id="new-password" required />
-
-    <label>
-      Role:
-      <select id="user-role">
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-      </select>
-    </label>
-    <button type="submit">Add User</button>
+      <button type="submit">Add File</button>
+    </div>
   </form>
 
-  <h2>Existing Users</h2>
-  <div id="user-list"></div>
+  <h2>Existing Files</h2>
+  <div class="file-list" id="admin-file-list"></div>
 </div>
-</div>
+
 <script src="script.js"></script>
+<script>
+  // Modal handling
+  const modalOverlay = document.getElementById('fullscreen-modal');
+  const modalIframeContainer = document.getElementById('modal-iframe-container');
+  const closeModalBtn = document.getElementById('close-modal');
+
+  closeModalBtn.addEventListener('click', () => {
+    modalOverlay.style.display = 'none';
+    modalIframeContainer.innerHTML = '';
+  });
+</script>
 </body>
 </html>
