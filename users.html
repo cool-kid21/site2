@@ -41,7 +41,6 @@
 
 <script src="script.js"></script>
 <script>
-  // Load users and setup delete buttons
   function loadUsers() {
     const container = document.getElementById('user-list');
     container.innerHTML = '';
@@ -49,7 +48,7 @@
       const div = document.createElement('div');
       div.className = 'user-list';
       div.innerHTML = `<p>Username: ${u.username} | Role: ${u.role}</p>`;
-      // Remove user button
+      // Remove user button (not for current user)
       if (u.username !== getCurrentUser().username) {
         const btn = document.createElement('button');
         btn.textContent = 'Remove User';
@@ -66,7 +65,6 @@
       container.appendChild(div);
     });
   }
-
   document.getElementById('add-user-form').addEventListener('submit', e => {
     e.preventDefault();
     const username = document.getElementById('new-username').value.trim();
@@ -82,8 +80,6 @@
       document.getElementById('add-user-form').reset();
     }
   });
-
-  // Load users on page load
   window.addEventListener('DOMContentLoaded', () => {
     loadUsers();
   });
