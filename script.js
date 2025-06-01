@@ -1,24 +1,76 @@
 // script.js
 
-// Utility functions (same as before)...
+// Define the admin code (keep this secret in real scenarios)
+const ADMIN_CODE = 'admin123';
 
-// Authentication functions (same as before)...
+// Utility functions
+function getUsers() {
+  const users = JSON.parse(localStorage.getItem('users')) || [];
+  return users;
+}
 
+function saveUsers(users) {
+  localStorage.setItem('users', JSON.stringify(users));
+}
+
+function getCurrentUser() {
+  return JSON.parse(localStorage.getItem('currentUser'));
+}
+
+function setCurrentUser(user) {
+  localStorage.setItem('currentUser', JSON.stringify(user));
+}
+
+function clearCurrentUser() {
+  localStorage.removeItem('currentUser');
+}
+
+// Authentication functions
+function signUp(username, password, role = 'user') {
+  const users = getUsers();
+  if (users.find(u => u.username === username)) {
+    alert('Username already exists.');
+    return false;
+  }
+  users.push({ username, password, role });
+  saveUsers(users);
+  return true;
+}
+
+function signIn(username, password) {
+  const users = getUsers();
+  const user = users.find(u => u.username === username && u.password === password);
+  if (user) {
+    setCurrentUser(user);
+    return true;
+  } else {
+    alert('Invalid credentials.');
+    return false;
+  }
+}
+
+function logout() {
+  clearCurrentUser();
+}
+
+// Wait for DOM content
 document.addEventListener('DOMContentLoaded', () => {
   const currentPage = window.location.pathname.split('/').pop();
   const user = getCurrentUser();
 
+  // Redirect if not signed in (except on sign-up/sign-in pages)
   if (currentPage !== 'signup.html' && currentPage !== 'index.html' && !user) {
     window.location.href = 'index.html';
     return;
   }
 
+  // Redirect if signed in on sign-in or sign-up pages
   if ((currentPage === 'index.html' || currentPage === 'signup.html') && user) {
     window.location.href = 'dashboard.html';
     return;
   }
 
-  // Sign in handling
+  // Handle Sign In
   if (currentPage === 'index.html') {
     document.getElementById('signin-form').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -30,20 +82,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Sign up handling
+  // Handle Sign Up
   if (currentPage === 'signup.html') {
     document.getElementById('signup-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const username = document.getElementById('new-username').value.trim();
       const password = document.getElementById('new-password').value;
-      if (signUp(username, password)) {
+      const adminCodeInput = document.getElementById('admin-code') ? document.getElementById('admin-code').value.trim() : '';
+
+      // Check admin code
+      let role = 'user';
+      if (adminCodeInput && adminCodeInput === ADMIN_CODE) {
+        role = 'admin';
+      }
+
+      if (signUp(username, password, role)) {
         alert('Account created! Please sign in.');
         window.location.href = 'index.html';
       }
     });
   }
 
-  // Logout
+  // Handle Logout
   if (document.getElementById('logout')) {
     document.getElementById('logout').addEventListener('click', () => {
       logout();
@@ -51,9 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Dashboard
+  // Dashboard logic
   if (currentPage === 'dashboard.html') {
-    // Load user files
     const fileListDiv = document.getElementById('file-list');
 
     function loadUserFiles() {
@@ -121,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const adminFileList = document.getElementById('admin-file-list');
-    const users = getUsers();
 
     function loadAllFiles() {
       adminFileList.innerHTML = '';
@@ -218,12 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
   }
 
-  // Hide iframe input for regular users on dashboard
+  // Hide iframe input for non-admin users on dashboard
   if (currentPage === 'dashboard.html') {
-    // Remove iframe textarea if user is not admin
-    const iframeTextarea = document.getElementById('iframe-code');
-    if (user.role !== 'admin' && iframeTextarea) {
-      iframeTextarea.parentNode.style.display = 'none';
-    }
+    // No additional action needed here for security
   }
 });
