@@ -52,19 +52,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentPage = window.location.pathname.split('/').pop();
   const user = getCurrentUser();
 
-  // Redirect logic
-  if (currentPage !== 'signup.html' && currentPage !== 'index.html' && !user) {
-    window.location.href = 'index.html';
-    return;
-  }
-  if ((currentPage === 'index.html' || currentPage === 'signup.html') && user) {
-    // Sign in redirects
-    if (user.role === 'admin') {
-      window.location.href = 'admin.html';
-    } else {
-      window.location.href = 'dashboard.html';
+  // Redirect to correct page based on role
+  if (user) {
+    // If on sign-in or sign-up pages, redirect to appropriate page
+    if (currentPage === 'index.html' || currentPage === 'signup.html') {
+      if (user.role === 'admin') {
+        window.location.href = 'admin.html';
+        return;
+      } else {
+        window.location.href = 'dashboard.html';
+        return;
+      }
     }
-    return;
+    // If on any page and user is logged in, ensure correct page for role
+    if (currentPage === 'dashboard.html' && user.role === 'admin') {
+      // user is admin but on dashboard, redirect to admin
+      window.location.href = 'admin.html';
+      return;
+    }
+    if (currentPage === 'admin.html' && user.role !== 'admin') {
+      // non-admin on admin page, redirect to dashboard
+      window.location.href = 'dashboard.html';
+      return;
+    }
+  } else {
+    // Not logged in, if on protected pages, redirect to sign in
+    if (currentPage !== 'index.html' && currentPage !== 'signup.html') {
+      window.location.href = 'index.html';
+      return;
+    }
   }
 
   // Sign In
@@ -84,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Sign Up with password length & optional admin code
+  // Sign Up
   if (currentPage === 'signup.html') {
     document.getElementById('signup-form').addEventListener('submit', e => {
       e.preventDefault();
@@ -105,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Logout button
+  // Logout
   if (document.getElementById('logout')) {
     document.getElementById('logout').addEventListener('click', () => {
       logout();
@@ -113,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Dashboard (users)
+  // Dashboard (user view)
   if (currentPage === 'dashboard.html') {
     const fileListDiv = document.getElementById('file-list');
 
@@ -206,7 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
           iframeContainer.innerHTML = iframeCode;
           div.appendChild(iframeContainer);
 
-          // Delete button
           const delBtn = document.createElement('button');
           delBtn.textContent = 'Delete';
           delBtn.style.marginTop = '0.5rem';
