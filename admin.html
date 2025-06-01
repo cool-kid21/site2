@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Study Server - Admin Panel</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header>Study Server - Admin Panel</header>
+
+<nav>
+  <a href="admin.html">Manage Files</a>
+  <a href="#" id="manage-users">Manage Users</a>
+  <a href="dashboard.html">User Dashboard</a>
+  <a href="#" id="logout">Logout</a>
+</nav>
+
+<div class="container" id="admin-container">
+<h1>Manage Files</h1>
+
+<!-- Upload iframe code -->
+<form id="admin-upload-form">
+  <label for="admin-iframe-code">Embed Google Drive iframe code</label>
+  <textarea id="admin-iframe-code" rows="4" placeholder='Paste iframe code here...' required></textarea>
+  <button type="submit">Add File</button>
+</form>
+
+<h2>Existing Files</h2>
+<div class="file-list" id="admin-file-list"></div>
+
+<h1>Manage Users</h1>
+<div id="user-management">
+  <h2>Add User</h2>
+  <form id="add-user-form">
+    <label for="new-username">Username</label>
+    <input type="text" id="new-username" required />
+
+    <label for="new-password">Password</label>
+    <input type="password" id="new-password" required />
+
+    <label>
+      Role:
+      <select id="user-role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+    </label>
+    <button type="submit">Add User</button>
+  </form>
+
+  <h2>Existing Users</h2>
+  <div class="user-list" id="user-list"></div>
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
