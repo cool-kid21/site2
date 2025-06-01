@@ -7,20 +7,38 @@
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<header>Study Server</header>
-<div class="container" style="max-width: 400px; margin: 2rem auto;">
-<h1>Sign In</h1>
-<form id="signin-form">
-  <label for="username">Username</label>
-  <input type="text" id="username" required />
+<header>Study Server - Sign In</header>
+<nav>
+  <a href="index.html" style="font-weight:bold;">Sign In</a>
+  <a href="signup.html">Sign Up</a>
+</nav>
+<div class="container">
+  <h1>Sign In</h1>
+  <form id="signin-form">
+    <label for="username">Username</label>
+    <input type="text" id="username" required />
 
-  <label for="password">Password</label>
-  <input type="password" id="password" required />
+    <label for="password">Password</label>
+    <input type="password" id="password" required />
 
-  <button type="submit">Sign In</button>
-</form>
-<p style="margin-top:1rem; text-align:center;">Don't have an account? <a href="signup.html">Sign Up</a></p>
+    <button type="submit">Sign In</button>
+  </form>
 </div>
 <script src="script.js"></script>
+<script>
+  document.getElementById('signin-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    if (signIn(username, password)) {
+      const user = getCurrentUser();
+      if (user.role === 'admin') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    }
+  });
+</script>
 </body>
 </html>
