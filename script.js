@@ -1,32 +1,25 @@
 // script.js
 
-// Define the admin code (keep this secret in real scenarios)
+// The admin code (change as needed)
 const ADMIN_CODE = 'admin123';
 
 // Utility functions
 function getUsers() {
-  const users = JSON.parse(localStorage.getItem('users')) || [];
-  return users;
+  return JSON.parse(localStorage.getItem('users')) || [];
 }
-
 function saveUsers(users) {
   localStorage.setItem('users', JSON.stringify(users));
 }
-
 function getCurrentUser() {
   return JSON.parse(localStorage.getItem('currentUser'));
 }
-
 function setCurrentUser(user) {
   localStorage.setItem('currentUser', JSON.stringify(user));
 }
-
 function clearCurrentUser() {
   localStorage.removeItem('currentUser');
 }
-
-// Authentication functions
-function signUp(username, password, role = 'user') {
+function signUp(username, password, role='user') {
   const users = getUsers();
   if (users.find(u => u.username === username)) {
     alert('Username already exists.');
@@ -36,7 +29,6 @@ function signUp(username, password, role = 'user') {
   saveUsers(users);
   return true;
 }
-
 function signIn(username, password) {
   const users = getUsers();
   const user = users.find(u => u.username === username && u.password === password);
@@ -48,31 +40,28 @@ function signIn(username, password) {
     return false;
   }
 }
-
 function logout() {
   clearCurrentUser();
 }
 
-// Wait for DOM content
+// Wait for DOM
 document.addEventListener('DOMContentLoaded', () => {
   const currentPage = window.location.pathname.split('/').pop();
   const user = getCurrentUser();
 
-  // Redirect if not signed in (except on sign-up/sign-in pages)
+  // Redirect logic
   if (currentPage !== 'signup.html' && currentPage !== 'index.html' && !user) {
     window.location.href = 'index.html';
     return;
   }
-
-  // Redirect if signed in on sign-in or sign-up pages
   if ((currentPage === 'index.html' || currentPage === 'signup.html') && user) {
     window.location.href = 'dashboard.html';
     return;
   }
 
-  // Handle Sign In
+  // Sign in
   if (currentPage === 'index.html') {
-    document.getElementById('signin-form').addEventListener('submit', (e) => {
+    document.getElementById('signin-form').addEventListener('submit', e => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
@@ -82,19 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Sign Up
+  // Sign up with password length and optional admin code
   if (currentPage === 'signup.html') {
-    document.getElementById('signup-form').addEventListener('submit', (e) => {
+    document.getElementById('signup-form').addEventListener('submit', e => {
       e.preventDefault();
       const username = document.getElementById('new-username').value.trim();
       const password = document.getElementById('new-password').value;
-      const adminCodeInput = document.getElementById('admin-code') ? document.getElementById('admin-code').value.trim() : '';
-
-      // Check admin code
-      let role = 'user';
-      if (adminCodeInput && adminCodeInput === ADMIN_CODE) {
-        role = 'admin';
+      if (password.length < 8) {
+        alert('Password must be at least 8 characters long.');
+        return;
       }
+      const adminCodeInput = document.getElementById('admin-code') ? document.getElementById('admin-code').value.trim() : '';
+      let role = 'user';
+      if (adminCodeInput && adminCodeInput === ADMIN_CODE) role = 'admin';
 
       if (signUp(username, password, role)) {
         alert('Account created! Please sign in.');
@@ -103,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Logout
+  // Logout button
   if (document.getElementById('logout')) {
     document.getElementById('logout').addEventListener('click', () => {
       logout();
@@ -111,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Dashboard logic
+  // Dashboard
   if (currentPage === 'dashboard.html') {
     const fileListDiv = document.getElementById('file-list');
 
@@ -154,8 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Handle new file upload
-    document.getElementById('upload-form').addEventListener('submit', (e) => {
+    // Add file
+    document.getElementById('upload-form').addEventListener('submit', e => {
       e.preventDefault();
       const iframeCode = document.getElementById('iframe-code').value.trim();
       if (!iframeCode) return;
@@ -168,10 +157,17 @@ document.addEventListener('DOMContentLoaded', () => {
       loadUserFiles();
     });
 
+    // Restrict embed code for non-admins
+    const iframeTextarea = document.getElementById('iframe-code');
+    if (iframeTextarea && user.role !== 'admin') {
+      iframeTextarea.disabled = true; // prevent editing
+      iframeTextarea.parentElement.style.display = 'none'; // hide
+    }
+
     loadUserFiles();
   }
 
-  // Admin panel
+  // Admin pages
   if (currentPage === 'admin.html') {
     if (user.role !== 'admin') {
       alert('Access denied.');
@@ -179,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Load all files
     const adminFileList = document.getElementById('admin-file-list');
 
     function loadAllFiles() {
@@ -217,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Add new file (admin only)
-    document.getElementById('admin-upload-form').addEventListener('submit', (e) => {
+    document.getElementById('admin-upload-form').addEventListener('submit', e => {
       e.preventDefault();
       const iframeCode = document.getElementById('admin-iframe-code').value.trim();
       if (!iframeCode) return;
@@ -229,19 +226,14 @@ document.addEventListener('DOMContentLoaded', () => {
       loadAllFiles();
     });
 
-    // Load users
+    // Load users for admin
     const userListDiv = document.getElementById('user-list');
-
     function loadUsers() {
       userListDiv.innerHTML = '';
-      getUsers().forEach((u) => {
+      getUsers().forEach(u => {
         const div = document.createElement('div');
         div.className = 'user-list';
-
-        div.innerHTML = `
-          <p>Username: ${u.username} | Role: ${u.role}</p>
-        `;
-
+        div.innerHTML = `<p>Username: ${u.username} | Role: ${u.role}</p>`;
         if (u.username !== user.username) {
           const btn = document.createElement('button');
           btn.textContent = 'Remove User';
@@ -258,26 +250,23 @@ document.addEventListener('DOMContentLoaded', () => {
         userListDiv.appendChild(div);
       });
     }
-
     // Add user
-    document.getElementById('add-user-form').addEventListener('submit', (e) => {
+    document.getElementById('add-user-form').addEventListener('submit', e => {
       e.preventDefault();
       const username = document.getElementById('new-username').value.trim();
       const password = document.getElementById('new-password').value;
       const role = document.getElementById('user-role').value;
+      if (password.length < 8) {
+        alert('Password must be at least 8 characters.');
+        return;
+      }
       if (signUp(username, password, role)) {
         alert('User added.');
         loadUsers();
         document.getElementById('add-user-form').reset();
       }
     });
-
     loadAllFiles();
     loadUsers();
-  }
-
-  // Hide iframe input for non-admin users on dashboard
-  if (currentPage === 'dashboard.html') {
-    // No additional action needed here for security
   }
 });
