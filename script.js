@@ -41,25 +41,20 @@ function signIn(username, password) {
 function logout() {
   clearCurrentUser();
 }
-
-// Load all files
 function loadAllFiles() {
   return JSON.parse(localStorage.getItem('all_files')) || [];
 }
 function saveAllFiles(files) {
   localStorage.setItem('all_files', JSON.stringify(files));
 }
-
-// Add a file (by uploader)
 function addFile(uploadedBy, filename, iframeCode) {
   const files = loadAllFiles();
   files.push({ filename, iframe: iframeCode, uploadedBy });
   saveAllFiles(files);
 }
-
-// Load and display files for current user
 function loadAndDisplayFilesForUser() {
   const container = document.getElementById('file-list');
+  if (!container) return; // in pages without this element
   container.innerHTML = '';
 
   const allFiles = loadAllFiles();
@@ -95,7 +90,7 @@ function loadAndDisplayFilesForUser() {
     div.appendChild(clickableDiv);
 
     // Show delete button if owner or admin
-    if (currentUser.role === 'admin' || currentUser.username === uploadedBy) {
+    if (getCurrentUser().role === 'admin' || getCurrentUser().username === uploadedBy) {
       const delBtn = document.createElement('button');
       delBtn.textContent = 'Delete';
       delBtn.onclick = () => {
@@ -116,7 +111,7 @@ function loadAndDisplayFilesForUser() {
   });
 }
 
-// Event handlers for logout
+// Event handlers for login, signup, logout
 document.querySelectorAll('#logout').forEach(link => {
   link.addEventListener('click', () => {
     logout();
@@ -124,21 +119,22 @@ document.querySelectorAll('#logout').forEach(link => {
   });
 });
 
-// Modal close button
+// Modal close
 const modalOverlay = document.getElementById('fullscreen-modal');
 const closeModalBtn = document.getElementById('close-modal');
-closeModalBtn.addEventListener('click', () => {
-  modalOverlay.style.display = 'none';
-  document.getElementById('modal-iframe-container').innerHTML = '';
-});
+if (closeModalBtn) {
+  closeModalBtn.addEventListener('click', () => {
+    modalOverlay.style.display = 'none';
+    document.getElementById('modal-iframe-container').innerHTML = '';
+  });
+}
 
-// On page load, handle role-based redirect and setup
+// On DOM load
 window.addEventListener('DOMContentLoaded', () => {
   const currentPage = window.location.pathname.split('/').pop();
   const user = getCurrentUser();
 
   if (user) {
-    // Redirect to correct page based on role
     if (currentPage === 'index.html' || currentPage === 'signup.html') {
       if (user.role === 'admin') {
         window.location.href = 'admin.html';
@@ -163,9 +159,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Setup event handlers for forms
   if (currentPage === 'index.html') {
-    // Sign in
     document.getElementById('signin-form').addEventListener('submit', e => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
@@ -192,8 +186,9 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       const adminCode = document.getElementById('admin-code') ? document.getElementById('admin-code').value.trim() : '';
       let role = 'user';
-      if (adminCode && adminCode === ADMIN_CODE) role = 'admin';
-
+      if (adminCode && adminCode === 'admin123') {
+        role = 'admin';
+      }
       if (signUp(username, password, role)) {
         alert('Account created! Please sign in.');
         window.location.href = 'index.html';
@@ -201,7 +196,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Load files on pages
   if (currentPage === 'dashboard.html') {
     loadAndDisplayFilesForUser();
   }
